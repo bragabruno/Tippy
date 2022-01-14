@@ -1,6 +1,7 @@
 package com.example.tippy
 
 import android.accounts.AuthenticatorDescription
+import android.animation.ArgbEvaluator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -9,11 +10,13 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.example.tippy.R
 import java.time.temporal.TemporalAmount
 
-private const val  TAG = "MainActivity"
+private const val TAG = "MainActivity"
 private const val INITAL_TIP_PERCENT = 15
+
 class MainActivity : AppCompatActivity() {
     private lateinit var etBaseAmount: EditText
     private lateinit var seekBarTip: SeekBar
@@ -36,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         seekBarTip.progress = INITAL_TIP_PERCENT
         tvTipPercentLabel.text = "$INITAL_TIP_PERCENT%"
         updateTipDescription(INITAL_TIP_PERCENT)
-        seekBarTip.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener {
+        seekBarTip.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 Log.i(TAG, "onProgressChanged $progress")
                 tvTipPercentLabel.text = "$progress%"
@@ -63,19 +66,26 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun updateTipDescription(tipPercent: Int) {
-        val tipDescription = when(tipPercent) {
+        val tipDescription = when (tipPercent) {
             in 0..9 -> "Poor"
             in 10..14 -> "Acceptable"
             in 15..19 -> "Good"
             in 20..24 -> "Great"
             else -> "Amazing"
         }
-            tvTipDescription.text = tipDescription
-        }
+        tvTipDescription.text = tipDescription
+        // Update the color based on the tipPercent
+        val color = ArgbEvaluator().evaluate(
+            tipPercent.toFloat()/seekBarTip.max,
+            ContextCompat.getColor(this, R.color.color_worst_tip),
+            ContextCompat.getColor(this, R.color.color_best_tip),
+        ) as Int
+        tvTipDescription.setTextColor(color)
+    }
 
 
     private fun computeTipAndTotal() {
-        if(etBaseAmount.text.isEmpty()){
+        if (etBaseAmount.text.isEmpty()) {
             tvTipAmount.text = ""
             tvTotalAmount.text = ""
             return

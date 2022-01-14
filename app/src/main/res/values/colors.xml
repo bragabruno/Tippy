@@ -11,4 +11,6 @@
     <color name="primary_blue">#68A6F7</color>
     <color name="darker_blue">#6C5DFC</color>
     <color name="background_blue">#ffffff</color>
+    <color name="color_worst_tip">#DC1e0b</color>
+    <color name="color_best_tip">#35b401</color>
 </resources>
